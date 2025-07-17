@@ -14,7 +14,6 @@ public class GameBoard : MonoBehaviour
     
     public void InitializeBoard()
     {
-        // 初始化水平线 (gridSize行, gridSize-1列)
         horizontalLines = new Line[gridSize, gridSize - 1];
         for (int r = 0; r < gridSize; r++)
         {
@@ -24,7 +23,6 @@ public class GameBoard : MonoBehaviour
             }
         }
 
-        // 初始化垂直线 (gridSize-1行, gridSize列)
         verticalLines = new Line[gridSize - 1, gridSize];
         for (int r = 0; r < gridSize - 1; r++)
         {
@@ -34,7 +32,6 @@ public class GameBoard : MonoBehaviour
             }
         }
 
-        // 初始化方框 ((gridSize-1)行, (gridSize-1)列)
         boxes = new Box[gridSize - 1, gridSize - 1];
         for (int r = 0; r < gridSize - 1; r++)
         {
@@ -68,7 +65,6 @@ public class GameBoard : MonoBehaviour
         if (!CanPlaceLine(row, col, isHorizontal))
             return completedBoxes;
 
-        // 放置线条
         if (isHorizontal)
         {
             Line line = horizontalLines[row, col];
@@ -84,7 +80,6 @@ public class GameBoard : MonoBehaviour
             verticalLines[row, col] = line;
         }
 
-        // 检查是否完成了方框
         completedBoxes = CheckCompletedBoxes(row, col, isHorizontal, playerId);
 
         return completedBoxes;
@@ -96,7 +91,6 @@ public class GameBoard : MonoBehaviour
 
         if (isHorizontal)
         {
-            // 检查上方的方框
             if (row > 0 && IsBoxCompleted(row - 1, col))
             {
                 Box box = boxes[row - 1, col];
@@ -109,7 +103,6 @@ public class GameBoard : MonoBehaviour
                 }
             }
 
-            // 检查下方的方框
             if (row < gridSize - 1 && IsBoxCompleted(row, col))
             {
                 Box box = boxes[row, col];
@@ -122,9 +115,9 @@ public class GameBoard : MonoBehaviour
                 }
             }
         }
-        else // 垂直线
+        else 
         {
-            // 检查左方的方框
+        
             if (col > 0 && IsBoxCompleted(row, col - 1))
             {
                 Box box = boxes[row, col - 1];
@@ -137,7 +130,6 @@ public class GameBoard : MonoBehaviour
                 }
             }
 
-            // 检查右方的方框
             if (col < gridSize - 1 && IsBoxCompleted(row, col))
             {
                 Box box = boxes[row, col];
@@ -159,7 +151,6 @@ public class GameBoard : MonoBehaviour
         if (boxRow < 0 || boxRow >= gridSize - 1 || boxCol < 0 || boxCol >= gridSize - 1)
             return false;
 
-        // 检查方框的四条边是否都已放置
         bool topLine = horizontalLines[boxRow, boxCol].isPlaced;
         bool bottomLine = horizontalLines[boxRow + 1, boxCol].isPlaced;
         bool leftLine = verticalLines[boxRow, boxCol].isPlaced;
@@ -170,7 +161,6 @@ public class GameBoard : MonoBehaviour
 
     public bool IsGameOver()
     {
-        // 检查是否还有可放置的线条
         for (int r = 0; r < gridSize; r++)
         {
             for (int c = 0; c < gridSize - 1; c++)
@@ -196,7 +186,6 @@ public class GameBoard : MonoBehaviour
     {
         List<(int, int, bool)> moves = new List<(int, int, bool)>();
 
-        // 添加所有可用的水平线
         for (int r = 0; r < gridSize; r++)
         {
             for (int c = 0; c < gridSize - 1; c++)
@@ -206,7 +195,6 @@ public class GameBoard : MonoBehaviour
             }
         }
 
-        // 添加所有可用的垂直线
         for (int r = 0; r < gridSize - 1; r++)
         {
             for (int c = 0; c < gridSize; c++)

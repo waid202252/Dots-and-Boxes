@@ -9,7 +9,7 @@ public struct Line
     public int col;
     public bool isHorizontal;
     public bool isPlaced;
-    public int playerId; // 0=未放置, 1=Player1, 2=Player2
+    public int playerId; 
 
     public Line(int r, int c, bool horizontal)
     {

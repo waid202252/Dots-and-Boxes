@@ -6,13 +6,10 @@ using System.Security.Cryptography;
 
 public static class SecurityManager
 {
-    // 输入验证
     public static bool ValidateMove(int row, int col, bool isHorizontal, GameBoard board)
     {
-        // 基本范围检查
         if (board == null) return false;
         
-        // 检查坐标是否在有效范围内
         if (isHorizontal)
         {
             if (row < 0 || row >= board.gridSize || col < 0 || col >= board.gridSize - 1)
@@ -30,7 +27,6 @@ public static class SecurityManager
             }
         }
 
-        // 检查该位置是否已有连线
         if (!board.CanPlaceLine(row, col, isHorizontal))
         {
             LogSecurityEvent($"Attempted to place line on occupied position: ({row}, {col}, {isHorizontal})");
@@ -40,14 +36,12 @@ public static class SecurityManager
         return true;
     }
 
-    // 游戏状态完整性验证
     public static string GenerateGameStateHash(GameBoard board)
     {
         if (board == null) return "";
 
         StringBuilder stateString = new StringBuilder();
         
-        // 添加所有水平线状态
         for (int r = 0; r < board.gridSize; r++)
         {
             for (int c = 0; c < board.gridSize - 1; c++)
@@ -57,7 +51,6 @@ public static class SecurityManager
             }
         }
 
-        // 添加所有垂直线状态
         for (int r = 0; r < board.gridSize - 1; r++)
         {
             for (int c = 0; c < board.gridSize; c++)
@@ -67,7 +60,6 @@ public static class SecurityManager
             }
         }
 
-        // 添加所有方框状态
         for (int r = 0; r < board.gridSize - 1; r++)
         {
             for (int c = 0; c < board.gridSize - 1; c++)
@@ -80,13 +72,11 @@ public static class SecurityManager
         return ComputeHash(stateString.ToString());
     }
 
-    // 防作弊检查
     public static bool ValidateGameState(GameBoard board, int expectedPlayer1Score, int expectedPlayer2Score)
     {
         int actualPlayer1Score = 0;
         int actualPlayer2Score = 0;
 
-        // 计算实际分数
         for (int r = 0; r < board.gridSize - 1; r++)
         {
             for (int c = 0; c < board.gridSize - 1; c++)
@@ -112,24 +102,20 @@ public static class SecurityManager
         return isValid;
     }
 
-    // AI行为验证
     public static bool ValidateAIMove(int row, int col, bool isHorizontal, GameBoard board, AIController.AIStrategy strategy)
     {
-        // 验证AI移动是否合理
         if (!ValidateMove(row, col, isHorizontal, board))
             return false;
 
-        // 记录AI移动用于审计
         LogAIMove(row, col, isHorizontal, strategy);
 
         return true;
     }
 
-    // 输入频率限制
     private static float lastInputTime = 0f;
     private static int inputCount = 0;
-    private const float INPUT_WINDOW = 1.0f; // 1秒窗口
-    private const int MAX_INPUTS_PER_WINDOW = 10; // 每秒最多10次输入
+    private const float INPUT_WINDOW = 1.0f; 
+    private const int MAX_INPUTS_PER_WINDOW = 10; 
 
     public static bool CheckInputRate()
     {
@@ -137,7 +123,6 @@ public static class SecurityManager
         
         if (currentTime - lastInputTime > INPUT_WINDOW)
         {
-            // 重置计数器
             lastInputTime = currentTime;
             inputCount = 1;
             return true;
@@ -154,7 +139,6 @@ public static class SecurityManager
         return true;
     }
 
-    // 辅助方法
     private static string ComputeHash(string input)
     {
         using (SHA256 sha256Hash = SHA256.Create())
@@ -165,7 +149,7 @@ public static class SecurityManager
             {
                 builder.Append(bytes[i].ToString("x2"));
             }
-            return builder.ToString().Substring(0, 16); // 取前16位
+            return builder.ToString().Substring(0, 16); 
         }
     }
 
@@ -173,7 +157,6 @@ public static class SecurityManager
     {
         Debug.LogWarning($"[SECURITY] {System.DateTime.Now:yyyy-MM-dd HH:mm:ss} - {message}");
         
-        // 在实际项目中，这里应该发送到服务器或写入安全日志文件
         PlayerPrefs.SetString($"SecurityLog_{System.DateTime.Now.Ticks}", message);
     }
 
@@ -182,21 +165,16 @@ public static class SecurityManager
         string moveLog = $"AI Move: ({row},{col},{isHorizontal}) using {strategy} strategy";
         Debug.Log($"[AI_AUDIT] {System.DateTime.Now:yyyy-MM-dd HH:mm:ss} - {moveLog}");
         
-        // 记录AI移动历史用于分析
         PlayerPrefs.SetString($"AIMoveLog_{System.DateTime.Now.Ticks}", moveLog);
     }
 
-    // 获取安全统计信息
     public static void GenerateSecurityReport()
     {
         Debug.Log("=== Security Report ===");
         
-        // 统计安全事件
         int securityEventCount = 0;
         int aiMoveCount = 0;
         
-        // 遍历PlayerPrefs中的日志（简化实现）
-        // 在实际项目中应该有专门的日志系统
         
         Debug.Log($"Security Events: {securityEventCount}");
         Debug.Log($"AI Moves Logged: {aiMoveCount}");

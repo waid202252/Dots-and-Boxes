@@ -25,13 +25,13 @@ public class InputController : MonoBehaviour
 
     void HandleInput()
     {
-        // 处理鼠标点击
+
         if (Input.GetMouseButtonDown(0))
         {
             HandleMouseClick();
         }
 
-        // 处理键盘输入
+
         if (Input.GetKeyDown(KeyCode.R))
         {
             gameController?.RestartGame();
@@ -47,25 +47,20 @@ public class InputController : MonoBehaviour
     {
         if (gameController == null || gameBoardView == null) return;
 
-        // 检查游戏状态
+
         if (gameController.gameState.isGameOver || 
             gameController.gameState.currentPhase != GamePhase.WaitingForInput)
             return;
 
-        // 如果当前是AI回合，忽略输入
         if (gameController.GetCurrentPlayer().isAI)
             return;
 
-        // 获取鼠标世界坐标
         Vector3 mouseWorldPos = GetMouseWorldPosition();
         
-        // 检查是否点击了有效的线条位置
         if (gameBoardView.GetLineFromWorldPosition(mouseWorldPos, out int row, out int col, out bool isHorizontal))
         {
-            // 验证移动是否合法
             if (SecurityManager.ValidateMove(row, col, isHorizontal, gameController.gameBoard))
             {
-                // 处理移动
                 gameController.ProcessMove(row, col, isHorizontal);
             }
         }
@@ -74,11 +69,10 @@ public class InputController : MonoBehaviour
     Vector3 GetMouseWorldPosition()
     {
         Vector3 mouseScreenPos = Input.mousePosition;
-        mouseScreenPos.z = gameCamera.transform.position.z * -1; // 相机到平面的距离
+        mouseScreenPos.z = gameCamera.transform.position.z * -1; 
         return gameCamera.ScreenToWorldPoint(mouseScreenPos);
     }
 
-    // 公共方法供AI或其他系统调用
     public void ProcessExternalMove(int row, int col, bool isHorizontal)
     {
         if (SecurityManager.ValidateMove(row, col, isHorizontal, gameController.gameBoard))

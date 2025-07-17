@@ -13,7 +13,6 @@ public class MainMenuManager : MonoBehaviour
 
     void Start()
     {
-        // 绑定按钮事件
         playerVsPlayerButton.onClick.AddListener(() => StartGame(false));
         playerVsAIButton.onClick.AddListener(() => StartGame(true));
         quitButton.onClick.AddListener(QuitGame);
@@ -21,11 +20,9 @@ public class MainMenuManager : MonoBehaviour
 
     void StartGame(bool withAI)
     {
-        // 保存游戏模式到PlayerPrefs
         PlayerPrefs.SetInt("PlayWithAI", withAI ? 1 : 0);
         PlayerPrefs.Save();
         
-        // 加载游戏场景
         SceneManager.LoadScene("GameScene");
     }
 

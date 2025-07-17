@@ -26,7 +26,7 @@ public class GameBoardView : MonoBehaviour
     private GameObject[,] verticalLineObjects;
     private GameObject[,] boxObjects;
 
-    private Vector3 centerOffset; // 新增字段
+    private Vector3 centerOffset; 
 
     public void InitializeBoardView(GameBoard board)
     {
@@ -38,21 +38,16 @@ public class GameBoardView : MonoBehaviour
     {
         int gridSize = gameBoard.gridSize;
 
-        // 清除现有对象
         ClearBoardVisuals();
 
-        // 计算居中偏移
         float offsetX = ((gridSize - 1) * gridSpacing) / 2f;
         float offsetY = ((gridSize - 1) * gridSpacing) / 2f;
         centerOffset = new Vector3(offsetX, offsetY, 0);
 
-        // 创建点阵
         CreateDots(gridSize, centerOffset);
 
-        // 创建线条
         CreateLines(gridSize, centerOffset);
 
-        // 创建方框背景
         CreateBoxes(gridSize, centerOffset);
     }
 
@@ -68,7 +63,7 @@ public class GameBoardView : MonoBehaviour
                     col * gridSpacing,
                     (gridSize - 1 - row) * gridSpacing,
                     0
-                ) - centerOffset; // 应用偏移
+                ) - centerOffset;
 
                 GameObject dot;
                 if (dotPrefab != null)
@@ -77,7 +72,6 @@ public class GameBoardView : MonoBehaviour
                 }
                 else
                 {
-                    // 创建简单的圆形点
                     dot = GameObject.CreatePrimitive(PrimitiveType.Sphere);
                     dot.transform.position = position;
                     dot.transform.localScale = Vector3.one * dotSize;
@@ -93,7 +87,6 @@ public class GameBoardView : MonoBehaviour
 
     void CreateLines(int gridSize, Vector3 centerOffset)
     {
-        // 创建水平线
         horizontalLineObjects = new GameObject[gridSize, gridSize - 1];
         for (int row = 0; row < gridSize; row++)
         {
@@ -104,12 +97,11 @@ public class GameBoardView : MonoBehaviour
 
                 GameObject line = CreateLineObject(startPos, endPos, true);
                 line.name = $"HLine_{row}_{col}";
-                line.SetActive(false); // 初始隐藏
+                line.SetActive(false); 
                 horizontalLineObjects[row, col] = line;
             }
         }
 
-        // 创建垂直线
         verticalLineObjects = new GameObject[gridSize - 1, gridSize];
         for (int row = 0; row < gridSize - 1; row++)
         {
@@ -120,7 +112,7 @@ public class GameBoardView : MonoBehaviour
 
                 GameObject line = CreateLineObject(startPos, endPos, false);
                 line.name = $"VLine_{row}_{col}";
-                line.SetActive(false); // 初始隐藏
+                line.SetActive(false); 
                 verticalLineObjects[row, col] = line;
             }
         }
@@ -131,7 +123,6 @@ public class GameBoardView : MonoBehaviour
         if (linePrefab != null)
         {
             GameObject line = Instantiate(linePrefab, transform);
-            // 配置line prefab的位置和旋转
             Vector3 center = (start + end) / 2;
             line.transform.position = center;
 
@@ -144,7 +135,6 @@ public class GameBoardView : MonoBehaviour
         }
         else
         {
-            // 使用LineRenderer创建线条
             GameObject lineObj = new GameObject("Line");
             lineObj.transform.parent = transform;
 
@@ -177,7 +167,7 @@ public class GameBoardView : MonoBehaviour
                     (col + 0.5f) * gridSpacing,
                     (gridSize - 1.5f - row) * gridSpacing,
                     0.1f
-                ) - centerOffset; // 应用偏移
+                ) - centerOffset; 
 
                 GameObject box;
                 if (boxPrefab != null)
@@ -186,7 +176,6 @@ public class GameBoardView : MonoBehaviour
                 }
                 else
                 {
-                    // 创建简单的方框
                     box = GameObject.CreatePrimitive(PrimitiveType.Quad);
                     box.transform.position = center;
                     box.transform.localScale = new Vector3(gridSpacing * 0.8f, gridSpacing * 0.8f, 1);
@@ -198,7 +187,7 @@ public class GameBoardView : MonoBehaviour
                 }
 
                 box.name = $"Box_{row}_{col}";
-                box.SetActive(false); // 初始隐藏
+                box.SetActive(false); 
                 boxObjects[row, col] = box;
             }
         }
@@ -221,7 +210,6 @@ public class GameBoardView : MonoBehaviour
         {
             lineObj.SetActive(true);
 
-            // 设置线条颜色
             Color lineColor = player.playerId == 1 ? player1Color : player2Color;
 
             Renderer renderer = lineObj.GetComponent<Renderer>();
@@ -248,7 +236,6 @@ public class GameBoardView : MonoBehaviour
             {
                 box.SetActive(true);
 
-                // 设置方框颜色
                 Color boxColor = player.playerId == 1 ?
                     new Color(player1Color.r, player1Color.g, player1Color.b, 0.3f) :
                     new Color(player2Color.r, player2Color.g, player2Color.b, 0.3f);
@@ -259,7 +246,6 @@ public class GameBoardView : MonoBehaviour
                     renderer.material.color = boxColor;
                 }
 
-                // 添加玩家标识文本
                 AddPlayerLabel(box, player);
             }
         }
@@ -267,7 +253,6 @@ public class GameBoardView : MonoBehaviour
 
     void AddPlayerLabel(GameObject box, Player player)
     {
-        // 在方框中添加玩家标识
         GameObject textObj = new GameObject("PlayerLabel");
         textObj.transform.parent = box.transform;
         textObj.transform.localPosition = Vector3.zero;
@@ -279,34 +264,28 @@ public class GameBoardView : MonoBehaviour
         textMesh.anchor = TextAnchor.MiddleCenter;
         textMesh.characterSize = 0.1f;
 
-        // 设置文字渲染顺序
         MeshRenderer meshRenderer = textObj.GetComponent<MeshRenderer>();
         meshRenderer.sortingOrder = 2;
     }
 
     void ClearBoardVisuals()
     {
-        // 清除所有子对象
         for (int i = transform.childCount - 1; i >= 0; i--)
         {
             DestroyImmediate(transform.GetChild(i).gameObject);
         }
     }
 
-    // 获取鼠标点击对应的线条位置
     public bool GetLineFromWorldPosition(Vector3 worldPos, out int row, out int col, out bool isHorizontal)
     {
         row = col = 0;
         isHorizontal = false;
 
-        // 应用居中偏移
         Vector3 localPos = worldPos + centerOffset;
 
-        // 转换为网格坐标
         float gridX = localPos.x / gridSpacing;
         float gridY = (gameBoard.gridSize - 1) - (localPos.y / gridSpacing);
 
-        // 检查水平线
         int hRow = Mathf.RoundToInt(gridY);
         int hCol = Mathf.FloorToInt(gridX + 0.5f);
 
@@ -323,7 +302,6 @@ public class GameBoardView : MonoBehaviour
             }
         }
 
-        // 检查垂直线
         int vRow = Mathf.FloorToInt(gridY + 0.5f);
         int vCol = Mathf.RoundToInt(gridX);
 

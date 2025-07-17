@@ -16,7 +16,7 @@ public class GameState
     public GamePhase currentPhase;
     public int currentPlayerId;
     public bool isGameOver;
-    public int winner; // 0=draw, 1=player1, 2=player2
+    public int winner; 
     
     public GameState()
     {

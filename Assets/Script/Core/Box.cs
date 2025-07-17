@@ -8,7 +8,7 @@ public struct Box
     public int row;
     public int col;
     public bool isCompleted;
-    public int ownerId; // 0=未完成, 1=Player1, 2=Player2
+    public int ownerId; 
 
     public Box(int r, int c)
     {

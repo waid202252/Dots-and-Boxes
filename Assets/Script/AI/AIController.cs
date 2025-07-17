@@ -14,7 +14,7 @@ public class AIController : MonoBehaviour
 
     [Header("AI Settings")]
     public AIStrategy strategy = AIStrategy.Greedy;
-    public int minimaxDepth = 2; // 降低深度避免卡顿
+    public int minimaxDepth = 2; 
     public float thinkingTime = 1.0f;
 
     public (int row, int col, bool isHorizontal) GetBestMove(GameBoard board)
@@ -61,7 +61,7 @@ public class AIController : MonoBehaviour
     {
         Debug.Log("AI: Using Greedy strategy");
 
-        // 1. 优先选择能完成方框的移动
+    
         foreach (var move in moves)
         {
             if (WillCompleteBox(board, move.Item1, move.Item2, move.Item3))
@@ -71,7 +71,6 @@ public class AIController : MonoBehaviour
             }
         }
 
-        // 2. 选择不会给对手创造机会的移动
         List<(int, int, bool)> safeMoves = new List<(int, int, bool)>();
         foreach (var move in moves)
         {
@@ -88,7 +87,6 @@ public class AIController : MonoBehaviour
             return move;
         }
 
-        // 3. 随机选择
         var randomMove = moves[Random.Range(0, moves.Count)];
         Debug.Log($"AI Greedy Move (Random fallback): ({randomMove.Item1}, {randomMove.Item2}, {randomMove.Item3})");
         return randomMove;
@@ -96,20 +94,16 @@ public class AIController : MonoBehaviour
 
     bool WillCompleteBox(GameBoard board, int row, int col, bool isHorizontal)
     {
-        // 简化实现，避免创建临时对象
         if (isHorizontal)
         {
-            // 检查上方和下方的方框
             int boxesCompleted = 0;
             
-            // 上方方框
             if (row > 0)
             {
                 int completedSides = CountCompletedSides(board, row - 1, col);
                 if (completedSides == 3) boxesCompleted++;
             }
             
-            // 下方方框
             if (row < board.gridSize - 1)
             {
                 int completedSides = CountCompletedSides(board, row, col);
@@ -120,17 +114,14 @@ public class AIController : MonoBehaviour
         }
         else
         {
-            // 检查左方和右方的方框
             int boxesCompleted = 0;
             
-            // 左方方框
             if (col > 0)
             {
                 int completedSides = CountCompletedSides(board, row, col - 1);
                 if (completedSides == 3) boxesCompleted++;
             }
             
-            // 右方方框
             if (col < board.gridSize - 1)
             {
                 int completedSides = CountCompletedSides(board, row, col);
@@ -143,18 +134,14 @@ public class AIController : MonoBehaviour
 
     bool WillCreateOpportunity(GameBoard board, int row, int col, bool isHorizontal)
     {
-        // 简化检查，避免创建临时GameBoard
         if (isHorizontal)
         {
-            // 检查是否会创造3边方框
-            // 上方方框
             if (row > 0)
             {
                 int completedSides = CountCompletedSides(board, row - 1, col);
                 if (completedSides == 2) return true;
             }
             
-            // 下方方框
             if (row < board.gridSize - 1)
             {
                 int completedSides = CountCompletedSides(board, row, col);
@@ -163,14 +150,12 @@ public class AIController : MonoBehaviour
         }
         else
         {
-            // 左方方框
             if (col > 0)
             {
                 int completedSides = CountCompletedSides(board, row, col - 1);
                 if (completedSides == 2) return true;
             }
             
-            // 右方方框
             if (col < board.gridSize - 1)
             {
                 int completedSides = CountCompletedSides(board, row, col);
@@ -185,7 +170,6 @@ public class AIController : MonoBehaviour
     {
         Debug.Log("AI: Using Minimax strategy (simplified)");
         
-        // 简化Minimax，避免创建大量临时对象
         int bestScore = int.MinValue;
         (int, int, bool) bestMove = moves[0];
 
@@ -208,19 +192,16 @@ public class AIController : MonoBehaviour
     {
         int score = 0;
         
-        // 能完成方框的移动得高分
         if (WillCompleteBox(board, row, col, isHorizontal))
         {
             score += 100;
         }
         
-        // 会给对手创造机会的移动扣分
         if (WillCreateOpportunity(board, row, col, isHorizontal))
         {
             score -= 50;
         }
         
-        // 添加一些随机性
         score += Random.Range(-10, 10);
         
         return score;
@@ -233,16 +214,14 @@ public class AIController : MonoBehaviour
 
         int count = 0;
         
-        // 检查四条边
-        if (board.horizontalLines[boxRow, boxCol].isPlaced) count++; // 上边
-        if (board.horizontalLines[boxRow + 1, boxCol].isPlaced) count++; // 下边
-        if (board.verticalLines[boxRow, boxCol].isPlaced) count++; // 左边
-        if (board.verticalLines[boxRow, boxCol + 1].isPlaced) count++; // 右边
+        if (board.horizontalLines[boxRow, boxCol].isPlaced) count++; 
+        if (board.horizontalLines[boxRow + 1, boxCol].isPlaced) count++; 
+        if (board.verticalLines[boxRow, boxCol].isPlaced) count++; 
+        if (board.verticalLines[boxRow, boxCol + 1].isPlaced) count++; 
         
         return count;
     }
 
-    // 清理方法 - 移除所有TempBoard相关代码
     void OnDestroy()
     {
         CleanupTempBoards();
@@ -255,7 +234,6 @@ public class AIController : MonoBehaviour
 
     void CleanupTempBoards()
     {
-        // 强制清理所有TempBoard对象
         GameObject[] tempBoards = GameObject.FindGameObjectsWithTag("TempBoard");
         foreach (GameObject tempBoard in tempBoards)
         {
@@ -263,7 +241,6 @@ public class AIController : MonoBehaviour
                 DestroyImmediate(tempBoard);
         }
 
-        // 也清理所有名字包含"TempBoard"的对象
         GameObject[] allObjects = FindObjectsOfType<GameObject>();
         foreach (GameObject obj in allObjects)
         {

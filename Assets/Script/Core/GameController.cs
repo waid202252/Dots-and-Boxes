@@ -24,31 +24,24 @@ public class GameController : MonoBehaviour
 
     void InitializeGame()
     {
-        // 检查游戏模式
         playWithAI = PlayerPrefs.GetInt("PlayWithAI", 0) == 1;
 
-        // 初始化玩家
         player1 = new Player(1, "Player 1", false);
         player2 = new Player(2, playWithAI ? "AI" : "Player 2", playWithAI);
 
-        // 初始化游戏状态
         gameState = new GameState();
 
-        // 初始化游戏棋盘
         if (gameBoard == null)
             gameBoard = FindObjectOfType<GameBoard>();
         
         gameBoard.InitializeBoard();
 
-        // 初始化视图
         if (gameBoardView != null)
             gameBoardView.InitializeBoardView(gameBoard);
 
-        // 初始化UI
         if (uiManager != null)
             uiManager.InitializeUI(this);
 
-        // 开始游戏
         StartPlayerTurn();
     }
 
@@ -69,13 +62,11 @@ public class GameController : MonoBehaviour
         return;
     }
 
-    // 验证移动合法性
     if (!SecurityManager.ValidateMove(row, col, isHorizontal, gameBoard))
     {
         Debug.LogError("Invalid move detected!");
         if (GetCurrentPlayer().isAI)
         {
-            // AI移动无效，强制切换玩家
             gameState.SwitchPlayer();
             StartPlayerTurn();
         }
@@ -85,14 +76,12 @@ public class GameController : MonoBehaviour
     List<Box> completedBoxes = gameBoard.PlaceLine(row, col, isHorizontal, gameState.currentPlayerId);
     Debug.Log($"Move processed, completed {completedBoxes.Count} boxes");
 
-    // 更新分数
     if (completedBoxes.Count > 0)
     {
         Player currentPlayer = GetCurrentPlayer();
         currentPlayer.AddScore(completedBoxes.Count);
         Debug.Log($"Player {currentPlayer.playerId} scored {completedBoxes.Count} points, total: {currentPlayer.score}");
 
-        // 更新视图
         if (gameBoardView != null)
         {
             gameBoardView.UpdateLineView(row, col, isHorizontal, currentPlayer);
@@ -102,11 +91,9 @@ public class GameController : MonoBehaviour
             }
         }
 
-        // 更新UI
         if (uiManager != null)
             uiManager.UpdateGameUI();
 
-        // 完成方框的玩家继续游戏
         if (!gameBoard.IsGameOver())
         {
             Debug.Log("Player continues due to completed boxes");
@@ -117,11 +104,9 @@ public class GameController : MonoBehaviour
     {
         Debug.Log("No boxes completed, switching players");
         
-        // 更新视图
         if (gameBoardView != null)
             gameBoardView.UpdateLineView(row, col, isHorizontal, GetCurrentPlayer());
 
-        // 切换玩家
         gameState.SwitchPlayer();
         Debug.Log($"Switched to Player {gameState.currentPlayerId}");
         
@@ -131,7 +116,6 @@ public class GameController : MonoBehaviour
         }
     }
 
-    // 检查游戏是否结束
     if (gameBoard.IsGameOver())
     {
         Debug.Log("Game Over detected");
@@ -151,7 +135,6 @@ public class GameController : MonoBehaviour
     Player currentPlayer = GetCurrentPlayer();
     Debug.Log($"Current player: {currentPlayer.playerName}, isAI: {currentPlayer.isAI}");
 
-    // 如果是AI回合
     if (currentPlayer.isAI)
     {
         Debug.Log("Starting AI turn");
@@ -172,7 +155,6 @@ public class GameController : MonoBehaviour
 {
     Debug.Log("AI Turn started - Coroutine");
     
-    // AI思考时间
     yield return new WaitForSeconds(aiController != null ? aiController.thinkingTime : 1.0f);
 
     if (aiController != null && gameBoard != null)
@@ -181,11 +163,10 @@ public class GameController : MonoBehaviour
         {
             var move = aiController.GetBestMove(gameBoard);
             
-            if (move.row >= 0 && move.col >= 0) // 有效移动
+            if (move.row >= 0 && move.col >= 0) 
             {
                 Debug.Log($"AI making move: ({move.row}, {move.col}, {move.isHorizontal})");
                 
-                // 确保在主线程上调用ProcessMove
                 ProcessMove(move.row, move.col, move.isHorizontal);
                 
                 Debug.Log("AI Turn completed - Coroutine ending");
@@ -193,7 +174,6 @@ public class GameController : MonoBehaviour
             else
             {
                 Debug.LogError("AI returned invalid move!");
-                // 如果AI返回无效移动，切换到玩家
                 gameState.SwitchPlayer();
                 StartPlayerTurn();
             }
@@ -201,7 +181,6 @@ public class GameController : MonoBehaviour
         catch (System.Exception e)
         {
             Debug.LogError($"AI Turn Error: {e.Message}\n{e.StackTrace}");
-            // 出错时切换到玩家
             gameState.SwitchPlayer();
             StartPlayerTurn();
         }
@@ -219,15 +198,13 @@ public class GameController : MonoBehaviour
         gameState.isGameOver = true;
         gameState.currentPhase = GamePhase.GameOver;
 
-        // 确定获胜者
         if (player1.score > player2.score)
             gameState.winner = 1;
         else if (player2.score > player1.score)
             gameState.winner = 2;
         else
-            gameState.winner = 0; // 平局
+            gameState.winner = 0; 
 
-        // 显示游戏结果
         if (uiManager != null)
             uiManager.ShowGameOver();
     }

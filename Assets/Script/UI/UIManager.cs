@@ -27,25 +27,21 @@ public class UIManager : MonoBehaviour
     {
         gameController = controller;
         
-        // 绑定底部面板按钮事件
         if (bottomRestartButton != null)
             bottomRestartButton.onClick.AddListener(() => gameController.RestartGame());
         
         if (bottomBackToMenuButton != null)
             bottomBackToMenuButton.onClick.AddListener(() => gameController.BackToMenu());
 
-        // 绑定游戏结束面板按钮事件
         if (gameOverRestartButton != null)
             gameOverRestartButton.onClick.AddListener(() => gameController.RestartGame());
         
         if (gameOverBackToMenuButton != null)
             gameOverBackToMenuButton.onClick.AddListener(() => gameController.BackToMenu());
 
-        // 隐藏游戏结束面板
         if (gameOverPanel != null)
             gameOverPanel.SetActive(false);
 
-        // 初始化UI显示
         UpdateGameUI();
     }
 
@@ -86,7 +82,6 @@ public class UIManager : MonoBehaviour
     {
         if (gameController == null) return;
 
-        // 更新分数显示
         if (player1ScoreText != null)
             player1ScoreText.text = $"Player 1: {gameController.player1.score}";
         
@@ -96,7 +91,6 @@ public class UIManager : MonoBehaviour
             player2ScoreText.text = $"{player2Name}: {gameController.player2.score}";
         }
 
-        // 更新当前玩家显示
         UpdateCurrentPlayerDisplay();
     }
 
@@ -131,12 +125,11 @@ public class UIManager : MonoBehaviour
         }
     }
 
-    // 公共方法供按钮直接调用（备用方案）
     public void OnRestartButtonClicked()
     {
         if (gameController != null)
         {
-            Debug.Log("Restart button clicked"); // 调试信息
+            Debug.Log("Restart button clicked"); 
             gameController.RestartGame();
         }
         else
@@ -149,7 +142,7 @@ public class UIManager : MonoBehaviour
     {
         if (gameController != null)
         {
-            Debug.Log("Back to menu button clicked"); // 调试信息
+            Debug.Log("Back to menu button clicked"); 
             gameController.BackToMenu();
         }
         else
@@ -167,7 +160,6 @@ public class UIManager : MonoBehaviour
             UpdateGameUI();
             UpdateCurrentPlayerDisplay();
             
-            // 强制重绘UI
             if (currentPlayerText != null)
             {
                 currentPlayerText.SetText(currentPlayerText.text);
