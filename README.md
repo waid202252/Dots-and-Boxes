@@ -1,8 +1,7 @@
 # Dots and Boxes Game
 
-**Student:** [你的姓名]  
+**Student:** Yaohui Wang 
 **Course:** DI32009  
-**Submission Date:** [提交日期]
 
 ##  Game Description
 A Unity implementation of the classic Dots and Boxes game featuring:
